@@ -33,8 +33,30 @@ class FileManager:
                 fp.write(line + "\n")
 
 
-class AccountManager(Manager):
+class Account:
     def __init__(self):
         self.balance = 0
 
 
+class Warehouse():
+    def __init__(self):
+        self.stock = {}
+
+
+    def open_stock(self, data):
+        for line in data:
+            command = line.split(" ")
+            action = command[0]
+            product = command[1]
+            if action == "zakup":
+                quantity = int(command[3])
+                if product not in self.stock:
+                    self.stock[product] = quantity
+                else:
+                    self.stock[product] += quantity
+            if action == "sprzedaz":
+                quantity = int(command[3])
+                if product not in self.stock:
+                    print("Brak produktu w magazynie")
+                else:
+                    self.stock[product] -= quantity
