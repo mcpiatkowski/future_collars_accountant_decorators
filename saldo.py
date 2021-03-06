@@ -1,17 +1,22 @@
 from sys import argv
-from manager import Manager, FileManager, Account
+from manager import Manager, FileManager
 
 manager = Manager()
-my_account = Account()
 file_manager = FileManager()
-file_path = argv[1]
 
 
-@manager.assign("saldo")
-def balance_update(file_manager):
-    file_manager.data.append("saldo {} {}".format(argv[2], argv[3]))
+@manager.assign("saldo", 2)
+def balance_update(manager, amount, comment):
+    if manager.balance + amount >= 0:
+        file_manager.data.append("saldo {} {}".format(amount, comment))
 
 
+print("balance: ", manager.balance)
+print(manager.actions)
+print(file_manager.file_path)
 file_manager.open_file()
-manager.execute("saldo", file_manager)
+print(file_manager.data)
+""" file_manager.open_file()
+manager.execute("saldo", manager)
 file_manager.save_data()
+ """

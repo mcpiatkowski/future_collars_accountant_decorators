@@ -4,17 +4,27 @@ from sys import argv
 class Manager:
     def __init__(self):
         self.actions = {}
+        self.stock = {}
+        self.balance = 0
+        self.history = []
 
-    def assign(self, action):
+    def assign(self, action, count):
         def decorate(callback):
-            self.actions[action] = callback
+            self.actions[action] = (callback, count)
         return decorate
 
     def execute(self, action, *args, **kwargs):
         if action not in self.actions:
             print("Error")
         else:
-            self.actions[action](*args, **kwargs)
+            self.actions[action][0](self, *args, **kwargs)
+
+    def param_count(self, action):
+        return self.actions.get(action, (0, 0))[1]
+"""         if action not in self.actions:
+            return 0
+        return self.actions[action][1]
+ """        
 
 
 class FileManager:
@@ -32,15 +42,23 @@ class FileManager:
             for line in self.data:
                 fp.write(line + "\n")
 
+    def file_process_lesson(self, manager):
+        index = 0
+        while index < len(self.data):
+            action = self.data[index]
+            index += 1
+            param_count = manager.param_count(action)
+            params = self.data[index: index+param_count]
+            manager.execute(action, *params)
 
-class Account:
-    def __init__(self):
-        self.balance = 0
+    def file_process(self, manager):
+        pass
 
 
 class Warehouse():
     def __init__(self):
-        self.stock = {}
+        pass
+        
 
 
     def open_stock(self, data):
