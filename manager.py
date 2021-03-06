@@ -6,7 +6,8 @@ class Manager:
         self.actions = {}
         self.stock = {}
         self.balance = 0
-        self.history = []
+        self.history = [] 
+
 
     def assign(self, action, count):
         def decorate(callback):
@@ -15,7 +16,8 @@ class Manager:
 
     def execute(self, action, *args, **kwargs):
         if action not in self.actions:
-            print("Error")
+            #print("Error ", action)
+            pass
         else:
             self.actions[action][0](self, *args, **kwargs)
 
@@ -42,7 +44,7 @@ class FileManager:
             for line in self.data:
                 fp.write(line + "\n")
 
-    def file_process_lesson(self, manager):
+    def file_process(self, manager):
         index = 0
         while index < len(self.data):
             action = self.data[index]
@@ -50,9 +52,6 @@ class FileManager:
             param_count = manager.param_count(action)
             params = self.data[index: index+param_count]
             manager.execute(action, *params)
-
-    def file_process(self, manager):
-        pass
 
 
 class Warehouse():
