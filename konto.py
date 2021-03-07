@@ -1,23 +1,39 @@
 from sys import argv
-from manager import Manager, FileManager, Account
+from manager import Manager, FileManager
 
 manager = Manager()
-my_account = Account()
 file_manager = FileManager()
 
 
-@manager.assign("konto")
-def balance(account):
-    for line in file_manager.data:
-        command = line.split(" ")
-        if command[0] == "saldo":
-            account.balance += int(command[1])
-        if command[0] == "sprzedaz":
-            account.balance += int(command[2])*int(command[3])
-        if command[0] == "zakup":
-            account.balance -= int(command[2])*int(command[3])
-    print("Stan konta: {}".format(account.balance))
+@manager.assign("saldo", 2)
+def balance_update(manager, amount, comment):
+    if manager.balance + int(amount) >= 0:
+        manager.balance += int(amount)
+
+
+@manager.assign("zakup", 3)
+def buy(manager, product_name, price, amount):
+    if manager.balance - int(price)*int(amount) >= 0:
+        manager.balance -= int(price)*int(amount)
+        if product_name not in manager.stock:
+            manager.stock[product_name] = int(amount)
+        else:
+            manager.stock[product_name] += int(amount)
+    else:
+        print("Brak wystarczającej ilość gotówki.")
+
+
+@manager.assign("sprzedaz", 3)
+def sell(manager, product_name, price, amount):
+    if product_name not in manager.stock:
+        print("Brak produktu w magazynie!")
+    elif manager.stock[product_name] >= int(amount):
+        manager.stock[product_name] -= int(amount)
+        manager.balance += int(price)*int(amount)
+    else:
+        print("Brak wystarczającej ilości")
 
 
 file_manager.open_file()
-manager.execute("konto", my_account)
+file_manager.file_process(manager)
+print("Stan konta: ", manager.balance)
